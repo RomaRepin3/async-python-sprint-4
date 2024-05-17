@@ -1,0 +1,126 @@
+FAILED                              [ 40%]2024-05-17 10:22:47,554 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2024-05-17 10:22:47,555 INFO sqlalchemy.engine.Engine INSERT INTO shorten_url (full_url, short_url, is_deleted, created_at) VALUES ($1::VARCHAR, $2::VARCHAR, $3::BOOLEAN, $4::TIMESTAMP WITHOUT TIME ZONE) RETURNING shorten_url.id
+2024-05-17 10:22:47,555 INFO sqlalchemy.engine.Engine [generated in 0.00020s] ('https://yandex.ru', 'https://www.short_url.ru/iebyd', False, datetime.datetime(2024, 5, 17, 7, 22, 47, 555627))
+2024-05-17 10:22:47,556 INFO sqlalchemy.engine.Engine ROLLBACK
+2024-05-17 10:22:47,552 - app - INFO - Create shorten url: full_url='https://yandex.ru'
+2024-05-17 10:22:47,552 - app - INFO - Generating random short url...
+2024-05-17 10:22:47,553 - app - INFO - Creating object: full_url='https://yandex.ru' short_url='https://www.short_url.ru/iebyd'
+2024-05-17 10:22:47,554 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-05-17 10:22:47,555 - sqlalchemy.engine.Engine - INFO - INSERT INTO shorten_url (full_url, short_url, is_deleted, created_at) VALUES ($1::VARCHAR, $2::VARCHAR, $3::BOOLEAN, $4::TIMESTAMP WITHOUT TIME ZONE) RETURNING shorten_url.id
+2024-05-17 10:22:47,555 - sqlalchemy.engine.Engine - INFO - [generated in 0.00020s] ('https://yandex.ru', 'https://www.short_url.ru/iebyd', False, datetime.datetime(2024, 5, 17, 7, 22, 47, 555627))
+2024-05-17 10:22:47,556 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-05-17 10:22:47,556 - app - ERROR - Bad request: AttributeError, args: ("'NoneType' object has no attribute 'send'",)
+Traceback (most recent call last):
+  File "C:\Program Files\Python310\lib\asyncio\base_events.py", line 745, in call_soon
+    self._check_closed()
+  File "C:\Program Files\Python310\lib\asyncio\base_events.py", line 510, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\src\api\router.py", line 46, in create_shorten_url
+    shorten_url_model = await shorten_url_repository.create(db=session, obj_in=shorten_url_create)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\src\services\repository_db.py", line 48, in create
+    await db.commit()
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\ext\asyncio\session.py", line 1009, in commit
+    await greenlet_spawn(self.sync_session.commit)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\session.py", line 2017, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1302, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1277, in _prepare_impl
+    self.session.flush()
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\session.py", line 4341, in flush
+    self._flush(objects)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\session.py", line 4476, in _flush
+    with util.safe_reraise():
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\session.py", line 4437, in _flush
+    flush_context.execute()
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2356, in _handle_dbapi_exception
+    raise exc_info[1].with_traceback(exc_info[2])
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\engine\default.py", line 924, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py", line 572, in execute
+    self._adapt_connection.await_(
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 131, in await_only
+    return current.driver.switch(awaitable)  # type: ignore[no-any-return]
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py", line 508, in _prepare_and_execute
+    await adapt_connection._start_transaction()
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py", line 842, in _start_transaction
+    self._handle_exception(error)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py", line 791, in _handle_exception
+    raise error
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py", line 840, in _start_transaction
+    await self._transaction.start()
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\asyncpg\transaction.py", line 146, in start
+    await self._connection.execute(query)
+  File "C:\Users\r.repin\PycharmProjects\async-python-sprint-4\venv\lib\site-packages\asyncpg\connection.py", line 350, in execute
+    result = await self._protocol.query(query, timeout)
+  File "asyncpg\protocol\protocol.pyx", line 374, in query
+  File "asyncpg\protocol\protocol.pyx", line 367, in asyncpg.protocol.protocol.BaseProtocol.query
+  File "asyncpg\protocol\coreproto.pyx", line 1094, in asyncpg.protocol.protocol.CoreProtocol._simple_query
+  File "asyncpg\protocol\protocol.pyx", line 966, in asyncpg.protocol.protocol.BaseProtocol._write
+  File "C:\Program Files\Python310\lib\asyncio\proactor_events.py", line 361, in write
+    self._loop_writing(data=bytes(data))
+  File "C:\Program Files\Python310\lib\asyncio\proactor_events.py", line 397, in _loop_writing
+    self._write_fut = self._loop._proactor.send(self._sock, data)
+AttributeError: 'NoneType' object has no attribute 'send'
+2024-05-17 10:22:47,564 - httpx - INFO - HTTP Request: POST http://testserver/api/ "HTTP/1.1 400 Bad Request"
+
+test_app.py:17 (test_create_shorten_url)
+<HTTPStatus.BAD_REQUEST: 400> != <HTTPStatus.CREATED: 201>
+
+Expected :<HTTPStatus.CREATED: 201>
+Actual   :<HTTPStatus.BAD_REQUEST: 400>
+<Click to see difference>
+
+def test_create_shorten_url():
+        full_url = 'https://yandex.ru'
+        response = client.post(
+            '/api/',
+            json={
+                'full_url': full_url,
+            }
+        )
+        response_data = response.json()
+>       assert response.status_code == HTTPStatus.CREATED, f'Invalid status code: {response.status_code}'
+E       AssertionError: Invalid status code: 400
+E       assert <HTTPStatus.BAD_REQUEST: 400> == <HTTPStatus.CREATED: 201>
+E        +  where <HTTPStatus.BAD_REQUEST: 400> = <Response [400 Bad Request]>.status_code
+E        +  and   <HTTPStatus.CREATED: 201> = HTTPStatus.CREATED
+
+test_app.py:27: AssertionError
