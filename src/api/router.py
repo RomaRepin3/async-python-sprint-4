@@ -9,18 +9,17 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from depends import get_session
-from depends import link_click_repository
-from depends import shorten_url_repository
+from handlers import batch_upload_shorten_urls_models
+from handlers import create_shorten_url_model
+from handlers import delete_shorten_url_handler
+from handlers import get_original_url
+from handlers import get_shorten_url_info
 from schemas import BatchUploadResponse
 from schemas import CreateShortenUrlRequest
 from schemas import DatabaseCheckResponse
 from schemas import GetShortenUrlStatusResponse
-from schemas import LinkClick
 from schemas import ShortenUrlFull
 from services import CheckDbRepository
-from utils import ExceptionFactory
-from utils import GetShortenUrlStatusResponseRowMapper
-from utils import ShortenUrlCreateRowMapper
 from utils import ShortenUrlFullRowMapper
 
 router = APIRouter()
@@ -41,11 +40,7 @@ async def create_shorten_url(
         create_data: CreateShortenUrlRequest,
         session: Annotated[AsyncSession, Depends(get_session)],
 ) -> Any:
-    shorten_url_create = await ShortenUrlCreateRowMapper.get(create_data=create_data)
-    try:
-        shorten_url_model = await shorten_url_repository.create(db=session, obj_in=shorten_url_create)
-    except Exception as e:
-        raise await ExceptionFactory.get_400_exception(message=f'{type(e).__name__}, args: {e.args}')
+    shorten_url_model = await create_shorten_url_model(create_data=create_data, session=session)
     return await ShortenUrlFullRowMapper.get_from_shorten_url_model(data=shorten_url_model)
 
 
@@ -56,18 +51,7 @@ async def batch_upload(
         create_data: List[CreateShortenUrlRequest],
         session: Annotated[AsyncSession, Depends(get_session)]
 ):
-    shorten_url_models = list()
-    errors = list()
-    for data in create_data:
-        try:
-            shorten_url_create = await ShortenUrlCreateRowMapper.get(create_data=data)
-            shorten_url_model = await shorten_url_repository.create(db=session, obj_in=shorten_url_create)
-            shorten_url_models.append(
-                await ShortenUrlFullRowMapper.get_from_shorten_url_model(data=shorten_url_model)
-            )
-        except Exception as e:
-            errors.append({'full_url': data.full_url, 'error': str(e)})
-    return BatchUploadResponse(shorten_url_models=shorten_url_models, errors=errors)
+    return await batch_upload_shorten_urls_models(create_data=create_data, session=session)
 
 
 @router.get(
@@ -80,13 +64,7 @@ async def get_url(
         shorten_url_id: int,
         session: Annotated[AsyncSession, Depends(get_session)]
 ):
-    shorten_url_model = await shorten_url_repository.get(db=session, id=shorten_url_id)
-    if not shorten_url_model:
-        raise await ExceptionFactory.get_404_exception(message='Shorten URL not found')
-    elif shorten_url_model.is_deleted:
-        raise await ExceptionFactory.get_410_exception(message='Shorten URL is deleted')
-    await link_click_repository.create(db=session, obj_in=LinkClick(shorten_url_id=shorten_url_id))
-    return RedirectResponse(url=shorten_url_model.full_url)
+    return await get_original_url(shorten_url_id=shorten_url_id, session=session)
 
 
 @router.get(
@@ -102,19 +80,11 @@ async def get_shorten_url_status(
         max_result: int = 10,
         offset: int = 0
 ):
-    shorten_url_model = await shorten_url_repository.get(db=session, id=shorten_url_id)
-    if not shorten_url_model:
-        raise await ExceptionFactory.get_404_exception(message='Shorten URL not found')
-    link_clicks = await link_click_repository.get_multi_by_shorten_url_id(
-        db=session,
-        url_id=shorten_url_id,
-        skip=offset,
-        limit=max_result
-    )
-    return await GetShortenUrlStatusResponseRowMapper.get(
-        shorten_url=shorten_url_model,
-        link_clicks=link_clicks,
-        is_full_info=full_info
+    return await get_shorten_url_info(
+        shorten_url_id=shorten_url_id,
+        session=session, full_info=full_info,
+        max_result=max_result,
+        offset=offset
     )
 
 
@@ -128,8 +98,4 @@ async def delete_shorten_url(
         shorten_url_id: int,
         session: Annotated[AsyncSession, Depends(get_session)]
 ):
-    shorten_url_model = await shorten_url_repository.get(db=session, id=shorten_url_id)
-    if not shorten_url_model:
-        raise await ExceptionFactory.get_404_exception(message='Shorten URL not found')
-    await shorten_url_repository.delete(db=session, id=shorten_url_id)
-    return await ShortenUrlFullRowMapper.get_from_shorten_url_model(data=shorten_url_model)
+    return await delete_shorten_url_handler(shorten_url_id=shorten_url_id, session=session)
